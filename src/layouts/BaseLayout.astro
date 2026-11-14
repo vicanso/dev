@@ -1,0 +1,212 @@
+---
+import '../styles/global.css';
+import { UI_STRINGS } from '../data/i18n';
+import { INITIAL_STATS } from '../data/projects';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = 'Vicanso — Native Rust Apps & Network Infrastructure',
+  description = 'Indie Craft Studio by Vicanso: Zedis, CyberAPI, Zniff, Pingap, charts-rs, diving-rs, httpstat.',
+  ogImage = '/icons/avatar.png',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/icons/avatar.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Zero-flash theme & language initialization -->
+    <script is:inline>
+      (function () {
+        try {
+          const savedTheme = localStorage.getItem('vicanso-theme');
+          const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+          if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
+            document.documentElement.classList.add('light');
+          }
+          const savedLang = localStorage.getItem('vicanso-lang');
+          const browserLang = navigator.language && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+          const lang = savedLang === 'zh' || savedLang === 'en' ? savedLang : browserLang;
+          document.documentElement.dataset.lang = lang;
+          document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        } catch (_) {
+          document.documentElement.dataset.lang = 'en';
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col relative selection:bg-orange-500/20 selection:text-orange-400">
+    <!-- Ambient canvas lighting & tech mesh -->
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div class="ambient-glow absolute -top-40 left-1/2 -translate-x-1/2 h-[520px] w-[1100px] rounded-full blur-[100px]"></div>
+      <div class="ambient-glow-secondary absolute top-96 -right-36 h-[420px] w-[420px] rounded-full blur-[120px]"></div>
+      <div class="tech-mesh absolute inset-0"></div>
+    </div>
+
+    <slot />
+
+    <script
+      is:inline
+      define:vars={{
+        uiStrings: UI_STRINGS,
+        initialStats: INITIAL_STATS,
+      }}
+    >
+      window.__VICANSO_I18N__ = uiStrings;
+      window.__VICANSO_INITIAL_STATS__ = initialStats;
+
+      function applyLang(lang) {
+        const dict = window.__VICANSO_I18N__?.[lang] || window.__VICANSO_I18N__.en;
+        document.documentElement.dataset.lang = lang;
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+        document.querySelectorAll('[data-i18n-key]').forEach((el) => {
+          const key = el.getAttribute('data-i18n-key');
+          if (key && dict[key]) el.textContent = dict[key];
+        });
+
+        document.querySelectorAll('[data-en][data-zh]').forEach((el) => {
+          const val = el.getAttribute(lang === 'zh' ? 'data-zh' : 'data-en');
+          if (val !== null) el.textContent = val;
+        });
+
+        const langBtn = document.getElementById('lang-toggle');
+        if (langBtn) {
+          langBtn.textContent = lang === 'zh' ? 'EN' : '中';
+        }
+      }
+
+      function formatStars(count) {
+        if (count >= 1000) {
+          return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        }
+        return String(count);
+      }
+
+      function applyStats(repos) {
+        if (!repos) return;
+        let total = 0;
+        Object.entries(repos).forEach(([id, info]) => {
+          if (!info) return;
+          total += info.stars || 0;
+          document.querySelectorAll(`[data-star-id="${id}"]`).forEach((el) => {
+            el.textContent = formatStars(info.stars || 0);
+          });
+          if (info.latestTag) {
+            document.querySelectorAll(`[data-tag-id="${id}"]`).forEach((el) => {
+              el.textContent = info.latestTag;
+            });
+          }
+        });
+        const totalEl = document.getElementById('total-stars-count');
+        if (totalEl && total > 0) {
+          totalEl.textContent = formatStars(total) + '+';
+        }
+        window.dispatchEvent(new CustomEvent('vicanso:stats-updated', { detail: repos }));
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const currentLang = document.documentElement.dataset.lang === 'zh' ? 'zh' : 'en';
+        applyLang(currentLang);
+
+        const langBtn = document.getElementById('lang-toggle');
+        if (langBtn) {
+          langBtn.addEventListener('click', () => {
+            const next = document.documentElement.dataset.lang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('vicanso-lang', next);
+            applyLang(next);
+          });
+        }
+
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+          const syncThemeIcon = () => {
+            const isLight = document.documentElement.classList.contains('light');
+            themeBtn.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+            const sun = themeBtn.querySelector('[data-icon="sun"]');
+            const moon = themeBtn.querySelector('[data-icon="moon"]');
+            if (sun && moon) {
+              sun.classList.toggle('hidden', !isLight);
+              moon.classList.toggle('hidden', isLight);
+            }
+          };
+          syncThemeIcon();
+          themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('light');
+            const isLight = document.documentElement.classList.contains('light');
+            localStorage.setItem('vicanso-theme', isLight ? 'light' : 'dark');
+            syncThemeIcon();
+          });
+          if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+              if (!localStorage.getItem('vicanso-theme')) {
+                document.documentElement.classList.toggle('light', e.matches);
+                syncThemeIcon();
+              }
+            });
+          }
+        }
+
+        // Copy snippet buttons with text & SVG checkmark feedback
+        document.querySelectorAll('[data-copy-text]').forEach((btn) => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const text = btn.getAttribute('data-copy-text');
+            if (!text) return;
+            try {
+              await navigator.clipboard.writeText(text);
+              const label = btn.querySelector('[data-copy-label]');
+              const copyIcon = btn.querySelector('.copy-icon');
+              const checkIcon = btn.querySelector('.check-icon');
+              const lang = document.documentElement.dataset.lang === 'zh' ? 'zh' : 'en';
+              const copiedText = window.__VICANSO_I18N__?.[lang]?.btnCopied || 'Copied!';
+              const copyText = window.__VICANSO_I18N__?.[lang]?.btnCopy || 'Copy';
+
+              btn.classList.add('text-emerald-400', 'border-emerald-500/50');
+              if (label) label.textContent = copiedText;
+              if (copyIcon) copyIcon.classList.add('hidden');
+              if (checkIcon) checkIcon.classList.remove('hidden');
+
+              setTimeout(() => {
+                btn.classList.remove('text-emerald-400', 'border-emerald-500/50');
+                if (label) label.textContent = copyText;
+                if (copyIcon) copyIcon.classList.remove('hidden');
+                if (checkIcon) checkIcon.classList.add('hidden');
+              }, 1600);
+            } catch (_) {}
+          });
+        });
+
+        // Fetch fresh stats from Cloudflare Pages Function (1h edge cached)
+        fetch('/api/github-stats')
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (data && data.repos) applyStats(data.repos);
+          })
+          .catch(() => {});
+      });
+    </script>
+  </body>
+</html>

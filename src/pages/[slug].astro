@@ -1,0 +1,504 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { PROJECTS, INITIAL_STATS, formatStars, type ProjectMeta } from '../data/projects';
+
+import zedis1 from '../assets/screenshots/zedis-1.png';
+import zedis2 from '../assets/screenshots/zedis-2.png';
+import cyberapi1 from '../assets/screenshots/cyberapi-1.png';
+import diving1 from '../assets/screenshots/diving-1.png';
+import httpstat1 from '../assets/screenshots/httpstat-1.png';
+import chartsCandlestick from '../assets/screenshots/charts-candlestick.png';
+import chartsSankey from '../assets/screenshots/charts-sankey.png';
+
+export function getStaticPaths() {
+  return PROJECTS.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: ProjectMeta;
+}
+
+const { project } = Astro.props;
+const stats = INITIAL_STATS[project.id];
+const stars = stats?.stars ?? 0;
+const latestTag = stats?.latestTag;
+const releasesUrl = `https://github.com/${project.repo}/releases`;
+
+const galleryMap: Record<string, ImageMetadata[]> = {
+  zedis: [zedis1, zedis2],
+  cyberapi: [cyberapi1],
+  'diving-rs': [diving1],
+  httpstat: [httpstat1],
+  'charts-rs': [chartsCandlestick, chartsSankey],
+};
+
+const gallery = galleryMap[project.id] || [];
+
+const highlightIcons = [
+  // 1: Speed / Performance Bolt
+  `<svg class="h-5 w-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+  // 2: Inspection / Architecture Layers
+  `<svg class="h-5 w-5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>`,
+  // 3: Control / Interface Sliders
+  `<svg class="h-5 w-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>`,
+];
+---
+
+<BaseLayout
+  title={`${project.name} — Vicanso`}
+  description={project.tagline.en}
+  ogImage={project.icon || '/icons/avatar.png'}
+>
+  <Header />
+
+  <main class="mx-auto w-full max-w-[960px] flex-1 px-4 py-8 sm:px-6 sm:py-12">
+    <!-- Breadcrumb with smooth back arrow -->
+    <a
+      href="/"
+      class="group mb-8 inline-flex items-center gap-2 text-[13.5px] font-medium transition-colors hover:text-white"
+      style="color: var(--text-secondary);"
+    >
+      <svg
+        class="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span data-i18n-key="backToAll">All Projects</span>
+    </a>
+
+    <!-- Product Header -->
+    <section class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex items-start gap-4 sm:gap-5 min-w-0">
+        {
+          project.icon ? (
+            <img
+              src={project.icon}
+              alt={`${project.name} icon`}
+              width="88"
+              height="88"
+              class="app-squircle h-18 w-18 shrink-0 object-cover sm:h-24 sm:w-24 shadow-lg"
+            />
+          ) : (
+            <div
+              class="app-squircle flex h-18 w-18 shrink-0 items-center justify-center font-mono text-[24px] sm:text-[28px] font-bold text-white sm:h-24 sm:w-24 shadow-lg"
+              style="background: linear-gradient(135deg, #f97316, #ea580c);"
+            >
+              {project.name.slice(0, 1).toUpperCase()}
+            </div>
+          )
+        }
+
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <h1
+              class="text-[26px] sm:text-[32px] font-bold tracking-tight text-neutral-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-b dark:from-white dark:via-neutral-100 dark:to-neutral-400"
+            >
+              {project.name}
+            </h1>
+            {
+              latestTag && (
+                <span
+                  data-tag-id={project.id}
+                  class="rounded-md border px-2 py-0.5 font-mono text-[11.5px] tabular-nums"
+                  style="border-color: var(--border-subtle); color: var(--text-secondary);"
+                >
+                  {latestTag}
+                </span>
+              )
+            }
+            <a
+              href={`https://github.com/${project.repo}/stargazers`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[12px] font-medium tabular-nums transition-all hover:border-amber-500/40"
+              style="border-color: var(--border-subtle); background-color: var(--bg-surface); color: var(--text-secondary);"
+            >
+              <svg class="h-3.5 w-3.5 fill-amber-400 text-amber-400" viewBox="0 0 24 24" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span data-star-id={project.id}>{formatStars(stars)}</span>
+              <svg
+                class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+            </a>
+          </div>
+
+          <p
+            class="mt-2.5 max-w-xl text-[15px] sm:text-[15.5px] leading-relaxed"
+            style="color: var(--text-secondary);"
+            data-en={project.tagline.en}
+            data-zh={project.tagline.zh}
+          >
+            {project.tagline.en}
+          </p>
+
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            {
+              project.platforms.map((tag) => (
+                <span
+                  class="rounded-md px-2 py-0.5 font-mono text-[11px] sm:text-[11.5px] border border-black/5 dark:border-white/5"
+                  style="background-color: var(--bg-elevated); color: var(--text-muted);"
+                >
+                  {tag}
+                </span>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Smart Download & Install CTA -->
+    <section class="surface-card mt-8 p-5 sm:p-6 shadow-md overflow-hidden">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <a
+            id="smart-download-btn"
+            href={stats?.downloads?.macosArm || releasesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-primary-tactile inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm"
+          >
+            <svg
+              class="h-4 w-4 stroke-white"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span id="smart-download-label">
+              {stats?.downloads?.macosArm ? 'Download for macOS' : 'View Releases'}
+            </span>
+          </a>
+
+          <a
+            href={releasesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-secondary-tactile group inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-[13.5px] font-medium"
+            style="color: var(--text-primary);"
+          >
+            <span data-i18n-key="allReleases">All Releases</span>
+            <svg
+              class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+
+          {
+            project.website && (
+              <a
+                href={project.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-secondary-tactile group inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-[13.5px] font-medium"
+                style="color: var(--text-secondary);"
+              >
+                <span data-i18n-key="btnDocs">Website</span>
+                <svg
+                  class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="7" y1="17" x2="17" y2="7"></line>
+                  <polyline points="7 7 17 7 17 17"></polyline>
+                </svg>
+              </a>
+            )
+          }
+        </div>
+
+        <a
+          href={`https://github.com/${project.repo}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-1.5 font-mono text-[13px] transition-colors hover:underline"
+          style="color: var(--text-secondary);"
+        >
+          <span>{project.repo}</span>
+          <svg
+            class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      {
+        project.installCmd && (
+          <div
+            class="mt-4 flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 font-mono text-[12.5px] shadow-inner overflow-hidden"
+            style="border-color: var(--border-subtle); background-color: var(--bg-canvas); color: var(--text-secondary);"
+          >
+            <div class="min-w-0 flex-1 truncate">
+              <code class="truncate block">
+                <span class="font-bold select-none" style="color: var(--accent);">$</span> {project.installCmd}
+              </code>
+            </div>
+            <button
+              type="button"
+              data-copy-text={project.installCmd}
+              class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11.5px] font-sans font-medium transition-all cursor-pointer hover:bg-white/5 active:scale-95"
+              style="border-color: var(--border-subtle); color: var(--text-primary);"
+            >
+              <svg class="copy-icon h-3.5 w-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <svg class="check-icon hidden h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span data-copy-label data-i18n-key="btnCopy">Copy</span>
+            </button>
+          </div>
+        )
+      }
+    </section>
+
+    <!-- Overview & Screenshot Gallery framed in authentic window headers -->
+    <section class="mt-8">
+      <p
+        class="text-[15px] sm:text-[15.5px] leading-relaxed"
+        style="color: var(--text-secondary);"
+        data-en={project.summary.en}
+        data-zh={project.summary.zh}
+      >
+        {project.summary.en}
+      </p>
+
+      {
+        gallery.length > 0 && (
+          <div class={`mt-6 grid gap-5 ${gallery.length > 1 ? 'sm:grid-cols-2' : 'grid-cols-1'}`}>
+            {gallery.map((img, i) => (
+              <div class="overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-[#0d1017] shadow-xl">
+                <!-- macOS Window Header Bar -->
+                <div class="flex h-7 items-center justify-between border-b border-black/5 dark:border-white/8 bg-black/[0.02] dark:bg-white/[0.04] px-3">
+                  <div class="flex items-center gap-1.5">
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f56] border border-[#e0443e]/50"></span>
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] border border-[#dea123]/50"></span>
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#27c93f] border border-[#1aab29]/50"></span>
+                  </div>
+                  <span class="font-mono text-[10.5px] text-neutral-400 select-none opacity-80">
+                    {project.name} · Preview {i + 1}
+                  </span>
+                  <div class="w-8"></div>
+                </div>
+                <!-- Screenshot Frame -->
+                <div class="aspect-[16/10] overflow-hidden bg-black/40">
+                  <Image
+                    src={img}
+                    alt={`${project.name} preview ${i + 1}`}
+                    class="h-full w-full object-contain"
+                    widths={[720, 1280]}
+                    sizes="(max-width: 768px) 100vw, 900px"
+                    format="webp"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+    <!-- 3-Column Key Highlights with Precision Icons -->
+    <section class="mt-10">
+      <h2
+        class="mb-4 text-[19px] font-semibold tracking-tight"
+        style="color: var(--text-primary);"
+        data-i18n-key="keyFeatures"
+      >
+        Key Highlights
+      </h2>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {
+          project.features.map((feat, idx) => (
+            <div class="surface-card p-5 group transition-transform duration-200">
+              <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-black/5 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.05]">
+                <Fragment set:html={highlightIcons[idx % highlightIcons.length]} />
+              </div>
+              <h3
+                class="text-[15px] font-semibold tracking-tight"
+                style="color: var(--text-primary);"
+                data-en={feat.title.en}
+                data-zh={feat.title.zh}
+              >
+                {feat.title.en}
+              </h3>
+              <p
+                class="mt-2 text-[13.5px] leading-relaxed"
+                style="color: var(--text-secondary);"
+                data-en={feat.description.en}
+                data-zh={feat.description.zh}
+              >
+                {feat.description.en}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Bottom Feedback Links -->
+    <section class="mt-10 flex flex-wrap items-center gap-4 border-t pt-6 text-[13.5px]" style="border-color: var(--border-subtle);">
+      <a
+        href={`https://github.com/${project.repo}/issues`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group inline-flex items-center gap-1 transition-colors hover:underline"
+        style="color: var(--text-secondary);"
+      >
+        <span data-i18n-key="reportIssue">Report an Issue</span>
+        <svg
+          class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+      <span style="color: var(--text-muted);">·</span>
+      <a
+        href={releasesUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group inline-flex items-center gap-1 transition-colors hover:underline"
+        style="color: var(--text-secondary);"
+      >
+        <span data-i18n-key="releaseNotes">Release Notes</span>
+        <svg
+          class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script
+    is:inline
+    define:vars={{
+      projectId: project.id,
+      initialDownloads: stats?.downloads || {},
+      releasesUrl,
+    }}
+  >
+    function resolveSmartDownload(downloads) {
+      const btn = document.getElementById('smart-download-btn');
+      const label = document.getElementById('smart-download-label');
+      if (!btn || !label) return;
+
+      const ua = navigator.userAgent.toLowerCase();
+      const platform = (navigator.userAgentData?.platform || navigator.platform || '').toLowerCase();
+      const lang = document.documentElement.dataset.lang === 'zh' ? 'zh' : 'en';
+      const prefix = lang === 'zh' ? '下载 ' : 'Download for ';
+
+      let url = null;
+      let osLabel = '';
+
+      if (platform.includes('mac') || ua.includes('mac os')) {
+        if (downloads.macosArm || downloads.macosIntel) {
+          url = downloads.macosArm || downloads.macosIntel;
+          osLabel = 'macOS';
+        }
+      } else if (platform.includes('win') || ua.includes('windows')) {
+        if (downloads.windows) {
+          url = downloads.windows;
+          osLabel = 'Windows';
+        }
+      } else if (platform.includes('linux') || ua.includes('linux')) {
+        if (downloads.linux) {
+          url = downloads.linux;
+          osLabel = 'Linux';
+        }
+      }
+
+      if (url) {
+        btn.setAttribute('href', url);
+        label.textContent = `${prefix}${osLabel}`;
+      } else {
+        btn.setAttribute('href', releasesUrl);
+        label.textContent = lang === 'zh' ? '查看全部发行版' : 'View Releases';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      resolveSmartDownload(initialDownloads);
+    });
+
+    window.addEventListener('vicanso:stats-updated', (e) => {
+      const info = e.detail?.[projectId];
+      if (info?.downloads) resolveSmartDownload(info.downloads);
+    });
+  </script>
+</BaseLayout>

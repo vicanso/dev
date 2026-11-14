@@ -1,0 +1,102 @@
+---
+---
+
+<header
+  class="sticky top-0 z-40 border-b backdrop-blur-xl transition-colors"
+  style="border-color: var(--border-subtle); background-color: color-mix(in srgb, var(--bg-canvas) 85%, transparent);"
+>
+  <div class="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-2.5 sm:px-6">
+    <a href="/" class="group flex items-center gap-2 shrink-0 focus-visible:rounded-lg">
+      <img
+        src="/icons/avatar.png"
+        alt="Vicanso"
+        width="28"
+        height="28"
+        class="h-7 w-7 rounded-full border object-cover transition-transform duration-200 group-hover:scale-105"
+        style="border-color: var(--border-subtle);"
+      />
+      <span class="text-[14px] font-semibold tracking-tight sm:text-[15px]" style="color: var(--text-primary);">
+        vicanso<span style="color: var(--accent);">.dev</span>
+      </span>
+    </a>
+
+    <nav class="flex items-center gap-1 sm:gap-2 shrink-0">
+      <a
+        href="/#apps"
+        data-i18n-key="navApps"
+        class="rounded-lg px-2 py-1 text-[12.5px] font-medium transition-all hover:bg-white/5 sm:px-2.5 sm:text-[13.5px]"
+        style="color: var(--text-secondary);"
+      >
+        Apps
+      </a>
+      <a
+        href="https://github.com/vicanso"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group hidden min-[360px]:inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[12.5px] font-medium transition-all hover:bg-white/5 sm:px-2.5 sm:text-[13.5px]"
+        style="color: var(--text-secondary);"
+      >
+        <span data-i18n-key="navGitHub">GitHub</span>
+        <svg
+          class="h-3 w-3 opacity-60 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+
+      <div class="mx-0.5 h-3.5 w-px sm:mx-1 sm:h-4" style="background-color: var(--border-subtle);"></div>
+
+      <button
+        id="lang-toggle"
+        type="button"
+        class="rounded-lg border px-2 py-1 font-mono text-[11.5px] font-medium transition-all cursor-pointer hover:border-white/20 active:scale-95 sm:px-2.5 sm:text-[12px]"
+        style="border-color: var(--border-subtle); color: var(--text-secondary); background-color: var(--bg-surface);"
+        aria-label="Toggle language"
+      >
+        中
+      </button>
+
+      <button
+        id="theme-toggle"
+        type="button"
+        class="inline-flex h-7 w-7 items-center justify-center rounded-lg border transition-all cursor-pointer hover:border-white/20 active:scale-95"
+        style="border-color: var(--border-subtle); color: var(--text-secondary); background-color: var(--bg-surface);"
+        aria-label="Toggle theme"
+      >
+        <svg
+          data-icon="moon"
+          class="h-3.5 w-3.5 transition-transform duration-200"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg
+          data-icon="sun"
+          class="hidden h-3.5 w-3.5 transition-transform duration-200"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="5"></circle>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>

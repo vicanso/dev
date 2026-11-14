@@ -1,0 +1,116 @@
+---
+interface Props {
+  counts: {
+    all: number;
+    desktop: number;
+    infra: number;
+    cli: number;
+  };
+}
+
+const { counts } = Astro.props;
+
+const tabs = [
+  { id: 'all', i18nKey: 'filterAll', label: 'All', count: counts.all },
+  { id: 'desktop', i18nKey: 'filterDesktop', label: 'Desktop GUI', count: counts.desktop },
+  { id: 'infra', i18nKey: 'filterInfra', label: 'Infra & Proxy', count: counts.infra },
+  { id: 'cli', i18nKey: 'filterCli', label: 'CLI & Libraries', count: counts.cli },
+];
+---
+
+<div
+  id="apps"
+  class="mb-8 inline-flex max-w-full flex-wrap items-center gap-1 rounded-2xl sm:rounded-full border p-1 shadow-sm backdrop-blur-md"
+  style="border-color: var(--border-subtle); background-color: color-mix(in srgb, var(--bg-surface) 90%, transparent);"
+  role="tablist"
+  aria-label="Filter projects"
+>
+  {
+    tabs.map((tab) => (
+      <button
+        type="button"
+        role="tab"
+        data-filter-btn={tab.id}
+        aria-selected={tab.id === 'all' ? 'true' : 'false'}
+        class="filter-pill inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-all duration-200 cursor-pointer active:scale-95"
+      >
+        <span data-i18n-key={tab.i18nKey}>{tab.label}</span>
+        <span class="filter-count rounded-full px-1.5 py-0.5 font-mono text-[11px] tabular-nums">
+          {tab.count}
+        </span>
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .filter-pill {
+    background-color: transparent;
+    color: var(--text-secondary);
+  }
+  .filter-pill:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  html.light .filter-pill:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  .filter-pill .filter-count {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+  }
+  html.light .filter-pill .filter-count {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  .filter-pill[aria-selected='true'] {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  html.light .filter-pill[aria-selected='true'] {
+    background-color: #ffffff;
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  .filter-pill[aria-selected='true'] .filter-count {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('[data-filter-btn]');
+    const sections = document.querySelectorAll('[data-category-section]');
+
+    function applyFilter(filter, updateHash = false) {
+      const valid = ['all', 'desktop', 'infra', 'cli'].includes(filter) ? filter : 'all';
+      buttons.forEach((btn) => {
+        const active = btn.getAttribute('data-filter-btn') === valid;
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      sections.forEach((sec) => {
+        const cat = sec.getAttribute('data-category-section');
+        const show = valid === 'all' || cat === valid;
+        sec.classList.toggle('hidden', !show);
+      });
+      if (updateHash) {
+        const nextHash = valid === 'all' ? '#apps' : `#${valid}`;
+        history.replaceState(null, '', nextHash);
+      }
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter-btn') || 'all';
+        applyFilter(filter, true);
+      });
+    });
+
+    const initialHash = window.location.hash.replace('#', '');
+    if (['desktop', 'infra', 'cli'].includes(initialHash)) {
+      applyFilter(initialHash, false);
+    }
+  });
+</script>

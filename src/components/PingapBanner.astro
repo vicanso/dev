@@ -1,0 +1,199 @@
+---
+import type { ProjectMeta, RepoStats } from '../data/projects';
+import { formatStars } from '../data/projects';
+
+interface Props {
+  project: ProjectMeta;
+  stats?: RepoStats;
+}
+
+const { project, stats } = Astro.props;
+const stars = stats?.stars ?? 0;
+const latestTag = stats?.latestTag;
+---
+
+<article class="surface-card p-5 sm:p-6 overflow-hidden">
+  <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+    <div class="max-w-2xl min-w-0">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- High-Tech Reverse Proxy Gateway Emblem -->
+        <div
+          class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 via-amber-600 to-orange-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_14px_rgba(249,115,22,0.32)] border border-white/10"
+        >
+          <svg
+            class="h-6 w-6 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2" y="3" width="20" height="7" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="7" rx="2" ry="2"></rect>
+            <line x1="6" y1="6.5" x2="6.01" y2="6.5" stroke-width="2.5"></line>
+            <line x1="6" y1="17.5" x2="6.01" y2="17.5" stroke-width="2.5"></line>
+            <path d="M13 6.5h5"></path>
+            <path d="M13 17.5h5"></path>
+            <path d="M10 10v4" stroke-dasharray="2 2" opacity="0.6"></path>
+          </svg>
+        </div>
+
+        <a
+          href={`/${project.id}`}
+          class="text-[21px] sm:text-[22px] font-semibold tracking-tight hover:underline"
+          style="color: var(--text-primary);"
+        >
+          {project.name}
+        </a>
+        {
+          latestTag && (
+            <span
+              data-tag-id={project.id}
+              class="rounded-md border px-2 py-0.5 font-mono text-[11.5px] tabular-nums"
+              style="border-color: var(--border-subtle); color: var(--text-muted);"
+            >
+              {latestTag}
+            </span>
+          )
+        }
+        <a
+          href={`https://github.com/${project.repo}/stargazers`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[12px] font-medium tabular-nums transition-all hover:border-amber-500/40"
+          style="border-color: var(--border-subtle); background-color: var(--bg-canvas); color: var(--text-secondary);"
+        >
+          <svg class="h-3.5 w-3.5 fill-amber-400 text-amber-400" viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span data-star-id={project.id}>{formatStars(stars)}</span>
+          <svg
+            class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      <p
+        class="mt-3 text-[14.5px] sm:text-[15px] leading-relaxed"
+        style="color: var(--text-secondary);"
+        data-en={project.tagline.en}
+        data-zh={project.tagline.zh}
+      >
+        {project.tagline.en}
+      </p>
+
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        {
+          project.platforms.map((tag) => (
+            <span
+              class="rounded-md px-2 py-0.5 font-mono text-[11px] sm:text-[11.5px] border border-black/5 dark:border-white/5"
+              style="background-color: var(--bg-elevated); color: var(--text-muted);"
+            >
+              {tag}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <a
+        href={`/${project.id}`}
+        class="btn-primary-tactile inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm"
+      >
+        <span data-i18n-key="btnDetails">Details</span>
+      </a>
+      {
+        project.website && (
+          <a
+            href={project.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-secondary-tactile group inline-flex items-center gap-1 rounded-xl px-3.5 py-2 text-[13.5px] font-medium"
+            style="color: var(--text-primary);"
+          >
+            <span data-i18n-key="btnDocs">Website</span>
+            <svg
+              class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+        )
+      }
+      <a
+        href={`https://github.com/${project.repo}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-secondary-tactile group inline-flex items-center gap-1 rounded-xl px-3.5 py-2 text-[13.5px] font-medium"
+        style="color: var(--text-primary);"
+      >
+        <span data-i18n-key="btnSource">Source</span>
+        <svg
+          class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  {
+    project.installCmd && (
+      <div
+        class="mt-5 flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 font-mono text-[12.5px] shadow-inner overflow-hidden"
+        style="border-color: var(--border-subtle); background-color: var(--bg-canvas); color: var(--text-secondary);"
+      >
+        <div class="min-w-0 flex-1 truncate">
+          <code class="truncate block">
+            <span class="font-bold select-none" style="color: var(--accent);">$</span> {project.installCmd}
+          </code>
+        </div>
+        <button
+          type="button"
+          data-copy-text={project.installCmd}
+          class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11.5px] font-sans font-medium transition-all cursor-pointer hover:bg-white/5 active:scale-95"
+          style="border-color: var(--border-subtle); color: var(--text-primary);"
+        >
+          <svg class="copy-icon h-3.5 w-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <svg class="check-icon hidden h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span data-copy-label data-i18n-key="btnCopy">Copy</span>
+        </button>
+      </div>
+    )
+  }
+</article>

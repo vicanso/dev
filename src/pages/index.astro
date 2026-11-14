@@ -1,0 +1,163 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FilterBar from '../components/FilterBar.astro';
+import AppCard from '../components/AppCard.astro';
+import PingapBanner from '../components/PingapBanner.astro';
+import ChartsPreview from '../components/ChartsPreview.astro';
+import TerminalMock from '../components/TerminalMock.astro';
+import { PROJECTS, INITIAL_STATS, TOTAL_STARS, formatStars } from '../data/projects';
+
+import zedisShot from '../assets/screenshots/zedis-1.png';
+import cyberapiShot from '../assets/screenshots/cyberapi-1.png';
+import divingShot from '../assets/screenshots/diving-1.png';
+import httpstatShot from '../assets/screenshots/httpstat-1.png';
+
+const desktopApps = PROJECTS.filter((p) => p.category === 'desktop');
+const infraProjects = PROJECTS.filter((p) => p.category === 'infra');
+const cliProjects = PROJECTS.filter((p) => p.category === 'cli');
+
+const screenshotMap = {
+  zedis: zedisShot,
+  cyberapi: cyberapiShot,
+  diving: divingShot,
+  httpstat: httpstatShot,
+};
+
+const counts = {
+  all: PROJECTS.length,
+  desktop: desktopApps.length,
+  infra: infraProjects.length,
+  cli: cliProjects.length,
+};
+---
+
+<BaseLayout>
+  <Header />
+
+  <main class="mx-auto w-full max-w-[1120px] flex-1 px-4 py-8 sm:px-6 sm:py-12">
+    <!-- Compact Product-First Hero with Elevated Typography & Atmosphere -->
+    <section class="mb-10 sm:mb-12">
+      <!-- Eyebrow Pill Badge -->
+      <div class="mb-3.5 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[12px] font-medium text-orange-400 backdrop-blur-md">
+        <span class="flex h-2 w-2 rounded-full bg-orange-400 animate-pulse"></span>
+        <span data-en="Indie Craft Studio · 100% Native Rust" data-zh="独立手作工坊 · 100% 原生 Rust">
+          Indie Craft Studio · 100% Native Rust
+        </span>
+      </div>
+
+      <h1
+        class="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl lg:text-[44px] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-b dark:from-white dark:via-neutral-100 dark:to-neutral-400"
+        data-i18n-key="heroTitle"
+      >
+        Hi, I'm Vicanso.
+      </h1>
+
+      <p
+        class="mt-3 max-w-2xl text-[16px] leading-relaxed sm:text-[17.5px]"
+        style="color: var(--text-secondary);"
+        data-i18n-key="heroSubtitle"
+      >
+        Crafting ultra-fast native apps & network infrastructure in Rust.
+      </p>
+
+      <!-- Glassmorphic SVG Metric Badges -->
+      <div class="mt-5 flex flex-wrap items-center gap-2.5">
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[12.5px] tabular-nums transition-all hover:border-amber-500/40"
+          style="border-color: var(--border-subtle); background-color: var(--bg-surface); color: var(--text-primary);"
+        >
+          <svg class="h-3.5 w-3.5 fill-amber-400 text-amber-400" viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span id="total-stars-count">{formatStars(TOTAL_STARS)}+</span>
+          <span style="color: var(--text-secondary);" data-i18n-key="heroBadgeStarsSuffix">GitHub Stars</span>
+        </span>
+
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[12.5px] transition-all hover:border-orange-500/40"
+          style="border-color: var(--border-subtle); background-color: var(--bg-surface); color: var(--text-secondary);"
+        >
+          <svg class="h-3.5 w-3.5 fill-orange-400 text-orange-400" viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span data-i18n-key="heroBadgeRust">100% Written in Rust</span>
+        </span>
+      </div>
+    </section>
+
+    <FilterBar counts={counts} />
+
+    <!-- 1. Native Desktop Apps -->
+    <section data-category-section="desktop" class="mb-12">
+      <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+        <div class="flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-orange-500/80"></span>
+          <h2 class="text-[19px] font-semibold tracking-tight" style="color: var(--text-primary);" data-i18n-key="sectionDesktop">
+            Native Desktop Apps
+          </h2>
+        </div>
+        <p class="text-[13.5px]" style="color: var(--text-muted);" data-i18n-key="sectionDesktopSub">
+          Built with Rust, GPUI & NSH — zero Electron bloat.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        {
+          desktopApps.map((project) => (
+            <AppCard
+              project={project}
+              stats={INITIAL_STATS[project.id]}
+              screenshot={project.id === 'zedis' ? screenshotMap.zedis : project.id === 'cyberapi' ? screenshotMap.cyberapi : undefined}
+            />
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 2. Network Infrastructure -->
+    <section data-category-section="infra" class="mb-12">
+      <div class="mb-4 flex items-center gap-2">
+        <span class="h-2 w-2 rounded-full bg-amber-500/80"></span>
+        <h2 class="text-[19px] font-semibold tracking-tight" style="color: var(--text-primary);" data-i18n-key="sectionInfra">
+          Network Infrastructure
+        </h2>
+      </div>
+      <div class="space-y-5">
+        {infraProjects.map((project) => <PingapBanner project={project} stats={INITIAL_STATS[project.id]} />)}
+      </div>
+    </section>
+
+    <!-- 3. CLI Tools & Libraries -->
+    <section data-category-section="cli" class="mb-6">
+      <div class="mb-4 flex items-center gap-2">
+        <span class="h-2 w-2 rounded-full bg-sky-500/80"></span>
+        <h2 class="text-[19px] font-semibold tracking-tight" style="color: var(--text-primary);" data-i18n-key="sectionCli">
+          CLI Tools & Libraries
+        </h2>
+      </div>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        {
+          cliProjects.map((project) => {
+            if (project.id === 'charts-rs') {
+              return <ChartsPreview project={project} stats={INITIAL_STATS[project.id]} />;
+            }
+            if (project.id === 'diving-rs') {
+              return <TerminalMock project={project} stats={INITIAL_STATS[project.id]} screenshot={screenshotMap.diving} />;
+            }
+            return (
+              <TerminalMock
+                project={project}
+                stats={INITIAL_STATS[project.id]}
+                screenshot={screenshotMap.httpstat}
+                wide={true}
+              />
+            );
+          })
+        }
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

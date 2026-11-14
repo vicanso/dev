@@ -1,0 +1,334 @@
+---
+import { Image } from 'astro:assets';
+import type { ProjectMeta, RepoStats } from '../data/projects';
+import { formatStars } from '../data/projects';
+import candlestickImg from '../assets/screenshots/charts-candlestick.png';
+import sankeyImg from '../assets/screenshots/charts-sankey.png';
+import heatmapImg from '../assets/screenshots/charts-heatmap.png';
+import mixImg from '../assets/screenshots/charts-mix.png';
+
+interface Props {
+  project: ProjectMeta;
+  stats?: RepoStats;
+}
+
+const { project, stats } = Astro.props;
+const stars = stats?.stars ?? 0;
+const latestTag = stats?.latestTag;
+
+const chartTabs = [
+  {
+    id: 'candlestick',
+    en: 'Candlestick',
+    zh: 'K 线图',
+    img: candlestickImg,
+    json: `{
+  "type": "candlestick",
+  "theme": "dark",
+  "x_axis": { "data": ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+  "series": [{
+    "data": [[20, 34, 10, 38], [40, 35, 30, 50], [31, 38, 33, 44]]
+  }]
+}`,
+  },
+  {
+    id: 'sankey',
+    en: 'Sankey',
+    zh: '桑基图',
+    img: sankeyImg,
+    json: `{
+  "type": "sankey",
+  "title": { "text": "Traffic Flow" },
+  "series": [{
+    "links": [
+      { "source": "CDN", "target": "Pingap", "value": 82 },
+      { "source": "Pingap", "target": "API", "value": 64 }
+    ]
+  }]
+}`,
+  },
+  {
+    id: 'heatmap',
+    en: 'Heatmap',
+    zh: '热力图',
+    img: heatmapImg,
+    json: `{
+  "type": "heatmap",
+  "x_axis": { "data": ["00h", "06h", "12h", "18h"] },
+  "y_axis": { "data": ["Mon", "Wed", "Fri"] },
+  "series": [{ "data": [[0,0,5],[1,1,9],[2,2,14]] }]
+}`,
+  },
+  {
+    id: 'mix',
+    en: 'Mix Line/Bar',
+    zh: '混合图表',
+    img: mixImg,
+    json: `{
+  "title": { "text": "QPS & Latency" },
+  "series": [
+    { "type": "bar", "name": "QPS", "data": [1200, 1850, 2400] },
+    { "type": "line", "name": "P99 ms", "data": [4.2, 3.8, 3.5] }
+  ]
+}`,
+  },
+];
+---
+
+<article class="surface-card flex flex-col justify-between p-5 sm:p-6 overflow-hidden">
+  <div>
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <a
+            href={`/${project.id}`}
+            class="text-[19px] sm:text-[20px] font-semibold tracking-tight hover:underline truncate"
+            style="color: var(--text-primary);"
+          >
+            {project.name}
+          </a>
+          {
+            latestTag && (
+              <span
+                data-tag-id={project.id}
+                class="rounded-md border px-1.5 py-0.5 font-mono text-[11px] tabular-nums shrink-0"
+                style="border-color: var(--border-subtle); color: var(--text-muted);"
+              >
+                {latestTag}
+              </span>
+            )
+          }
+        </div>
+        <div class="mt-1.5 flex flex-wrap gap-1.5">
+          {
+            project.platforms.map((tag) => (
+              <span
+                class="rounded-md px-1.5 py-0.5 font-mono text-[11px] border border-black/5 dark:border-white/5"
+                style="background-color: var(--bg-elevated); color: var(--text-muted);"
+              >
+                {tag}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+
+      <a
+        href={`https://github.com/${project.repo}/stargazers`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-[12px] font-medium tabular-nums transition-all hover:border-amber-500/40"
+        style="border-color: var(--border-subtle); background-color: var(--bg-canvas); color: var(--text-secondary);"
+      >
+        <svg class="h-3.5 w-3.5 fill-amber-400 text-amber-400" viewBox="0 0 24 24" aria-hidden="true">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span data-star-id={project.id}>{formatStars(stars)}</span>
+        <svg
+          class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <p
+      class="mt-3.5 text-[14px] sm:text-[14.5px] leading-relaxed"
+      style="color: var(--text-secondary);"
+      data-en={project.tagline.en}
+      data-zh={project.tagline.zh}
+    >
+      {project.tagline.en}
+    </p>
+
+    <!-- Interactive Chart Tabs -->
+    <div class="mt-4">
+      <div class="mb-2.5 flex items-center justify-between gap-2">
+        <div class="flex flex-wrap gap-1 min-w-0" role="tablist" aria-label="Chart types">
+          {
+            chartTabs.map((tab, idx) => (
+              <button
+                type="button"
+                role="tab"
+                data-chart-tab={tab.id}
+                aria-selected={idx === 0 ? 'true' : 'false'}
+                class="chart-tab-btn rounded-lg border px-2.5 py-1 font-mono text-[11px] sm:text-[11.5px] transition-all cursor-pointer active:scale-95"
+                data-en={tab.en}
+                data-zh={tab.zh}
+              >
+                {tab.en}
+              </button>
+            ))
+          }
+        </div>
+        <button
+          type="button"
+          id="charts-json-toggle"
+          class="rounded-lg border px-2 py-1 font-mono text-[11px] transition-all cursor-pointer hover:border-white/20 active:scale-95 shrink-0"
+          style="border-color: var(--border-subtle); color: var(--text-muted); background-color: var(--bg-surface);"
+          data-i18n-key="viewJson"
+        >
+          View JSON
+        </button>
+      </div>
+
+      <!-- Harmonized Dark Canvas Container -->
+      <div class="screenshot-frame relative aspect-[16/10] bg-[#0c0e12] border border-black/10 dark:border-white/10 shadow-inner">
+        {
+          chartTabs.map((tab, idx) => (
+            <div data-chart-panel={tab.id} class={`h-full w-full transition-opacity duration-200 ${idx === 0 ? '' : 'hidden'}`}>
+              <Image
+                src={tab.img}
+                alt={`charts-rs ${tab.en} example`}
+                class="h-full w-full object-contain p-2"
+                widths={[480, 800]}
+                sizes="(max-width: 768px) 100vw, 480px"
+                format="webp"
+              />
+            </div>
+          ))
+        }
+
+        <div
+          id="charts-json-overlay"
+          class="hidden absolute inset-0 overflow-auto bg-[#0b0d10]/95 backdrop-blur-sm p-4 font-mono text-[11.5px] leading-relaxed text-emerald-300"
+        >
+          <pre id="charts-json-code">{chartTabs[0].json}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Install & Actions -->
+  <div class="mt-4 space-y-2.5">
+    {
+      project.installCmd && (
+        <div
+          class="flex items-center justify-between gap-2 rounded-xl border px-3 py-2 font-mono text-[12px] shadow-inner overflow-hidden"
+          style="border-color: var(--border-subtle); background-color: var(--bg-canvas); color: var(--text-secondary);"
+        >
+          <div class="min-w-0 flex-1 truncate">
+            <code class="truncate block">
+              <span class="font-bold select-none" style="color: var(--accent);">$</span> {project.installCmd}
+            </code>
+          </div>
+          <button
+            type="button"
+            data-copy-text={project.installCmd}
+            class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11.5px] font-sans font-medium transition-all cursor-pointer hover:bg-white/5 active:scale-95"
+            style="border-color: var(--border-subtle); color: var(--text-primary);"
+          >
+            <svg class="copy-icon h-3.5 w-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <svg class="check-icon hidden h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span data-copy-label data-i18n-key="btnCopy">Copy</span>
+          </button>
+        </div>
+      )
+    }
+
+    <div class="flex items-center gap-2">
+      <a
+        href={`/${project.id}`}
+        class="btn-secondary-tactile inline-flex flex-1 items-center justify-center rounded-xl px-3 py-1.5 text-[13px] font-medium"
+        style="color: var(--text-primary);"
+        data-i18n-key="btnDetails"
+      >
+        Details
+      </a>
+      <a
+        href={`https://github.com/${project.repo}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-secondary-tactile group inline-flex items-center justify-center gap-1 rounded-xl px-3 py-1.5 text-[13px] font-medium"
+        style="color: var(--text-secondary);"
+      >
+        <span data-i18n-key="btnSource">Source</span>
+        <svg
+          class="h-3 w-3 opacity-50 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .chart-tab-btn {
+    border-color: var(--border-subtle);
+    background-color: var(--bg-canvas);
+    color: var(--text-muted);
+  }
+  .chart-tab-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+  }
+  .chart-tab-btn[aria-selected='true'] {
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>
+
+<script
+  is:inline
+  define:vars={{
+    chartJsonMap: Object.fromEntries(chartTabs.map((t) => [t.id, t.json])),
+  }}
+>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabBtns = document.querySelectorAll('[data-chart-tab]');
+    const panels = document.querySelectorAll('[data-chart-panel]');
+    const jsonToggle = document.getElementById('charts-json-toggle');
+    const jsonOverlay = document.getElementById('charts-json-overlay');
+    const jsonCode = document.getElementById('charts-json-code');
+    let activeId = 'candlestick';
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeId = btn.getAttribute('data-chart-tab') || 'candlestick';
+        tabBtns.forEach((b) => {
+          b.setAttribute('aria-selected', b.getAttribute('data-chart-tab') === activeId ? 'true' : 'false');
+        });
+        panels.forEach((p) => {
+          p.classList.toggle('hidden', p.getAttribute('data-chart-panel') !== activeId);
+        });
+        if (jsonCode && chartJsonMap[activeId]) {
+          jsonCode.textContent = chartJsonMap[activeId];
+        }
+      });
+    });
+
+    if (jsonToggle && jsonOverlay) {
+      jsonToggle.addEventListener('click', () => {
+        const isHidden = jsonOverlay.classList.contains('hidden');
+        jsonOverlay.classList.toggle('hidden', !isHidden);
+        const lang = document.documentElement.dataset.lang === 'zh' ? 'zh' : 'en';
+        const dict = window.__VICANSO_I18N__?.[lang] || window.__VICANSO_I18N__.en;
+        jsonToggle.textContent = isHidden ? dict.hideJson : dict.viewJson;
+      });
+    }
+  });
+</script>
