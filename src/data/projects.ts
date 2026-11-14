@@ -250,7 +250,7 @@ export const PROJECTS: ProjectMeta[] = [
     name: 'diving-rs',
     repo: 'vicanso/diving-rs',
     category: 'cli',
-    website: 'https://diving.npmtrend.com/',
+    website: 'https://diving.vicanso.dev/',
     platforms: ['Container', 'TUI / Web / MCP', 'Security'],
     tagline: {
       en: 'Daemonless container image analyzer with layer inspection, secret scanning, TUI, Web & MCP.',
