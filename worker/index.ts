@@ -13,6 +13,17 @@ interface GitHubAsset {
   browser_download_url: string;
 }
 
+interface WorkerEnv {
+  GITHUB_TOKEN?: string;
+  ASSETS: {
+    fetch: (request: Request) => Promise<Response>;
+  };
+}
+
+interface WorkerExecutionContext {
+  waitUntil: (promise: Promise<unknown>) => void;
+}
+
 function classifyAssets(assets: GitHubAsset[] = []) {
   const result: Record<string, string> = {};
   for (const asset of assets) {
@@ -40,13 +51,9 @@ function classifyAssets(assets: GitHubAsset[] = []) {
   return result;
 }
 
-export async function onRequestGet(context: {
-  request: Request;
-  env?: { GITHUB_TOKEN?: string };
-  waitUntil?: (p: Promise<unknown>) => void;
-}) {
+async function handleGithubStats(request: Request, env: WorkerEnv, ctx: WorkerExecutionContext): Promise<Response> {
   const cache = (caches as unknown as { default?: Cache }).default;
-  const cacheKey = new Request(context.request.url, { method: 'GET' });
+  const cacheKey = new Request(request.url, { method: 'GET' });
 
   if (cache) {
     const cached = await cache.match(cacheKey);
@@ -54,11 +61,11 @@ export async function onRequestGet(context: {
   }
 
   const headers: Record<string, string> = {
-    'User-Agent': 'vicanso-dev-edge',
+    'User-Agent': 'vicanso-dev-worker',
     Accept: 'application/vnd.github+json',
   };
-  if (context.env?.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${context.env.GITHUB_TOKEN}`;
+  if (env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
   }
 
   const entries = await Promise.all(
@@ -111,8 +118,18 @@ export async function onRequestGet(context: {
   );
 
   if (cache && Object.keys(repos).length > 0) {
-    context.waitUntil?.(cache.put(cacheKey, response.clone()));
+    ctx.waitUntil(cache.put(cacheKey, response.clone()));
   }
 
   return response;
 }
+
+export default {
+  async fetch(request: Request, env: WorkerEnv, ctx: WorkerExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname === '/api/github-stats' && request.method === 'GET') {
+      return handleGithubStats(request, env, ctx);
+    }
+    return env.ASSETS.fetch(request);
+  },
+};
