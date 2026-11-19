@@ -1,41 +1,41 @@
 {
-  "updatedAt": "2026-11-13T03:01:24.081Z",
+  "updatedAt": "2026-11-18T11:27:26.251Z",
   "repos": {
     "zedis": {
       "repo": "vicanso/zedis",
-      "stars": 2203,
-      "latestTag": "v0.16.0",
+      "stars": 2212,
+      "latestTag": "v0.17.0",
       "downloads": {
-        "linux": "https://github.com/vicanso/zedis/releases/download/v0.16.0/zedis-linux-x86_64.deb",
-        "macosArm": "https://github.com/vicanso/zedis/releases/download/v0.16.0/Zedis-aarch64.dmg",
-        "windows": "https://github.com/vicanso/zedis/releases/download/v0.16.0/zedis-windows-aarch64-fast.msi",
-        "macosIntel": "https://github.com/vicanso/zedis/releases/download/v0.16.0/Zedis-x86_64.dmg"
+        "linux": "https://github.com/vicanso/zedis/releases/download/v0.17.0/zedis-linux-x86_64.deb",
+        "macosArm": "https://github.com/vicanso/zedis/releases/download/v0.17.0/Zedis-aarch64.dmg",
+        "windows": "https://github.com/vicanso/zedis/releases/download/v0.17.0/zedis-windows-aarch64-fast.msi",
+        "macosIntel": "https://github.com/vicanso/zedis/releases/download/v0.17.0/Zedis-x86_64.dmg"
       }
     },
     "cyberapi": {
       "repo": "vicanso/cyberapi",
-      "stars": 471,
-      "latestTag": "v0.6.1",
+      "stars": 543,
+      "latestTag": "v0.6.2",
       "downloads": {
-        "macosArm": "https://github.com/vicanso/cyberapi/releases/download/v0.6.1/cyberapi-0.6.1-aarch64-apple-darwin.dmg",
-        "linux": "https://github.com/vicanso/cyberapi/releases/download/v0.6.1/cyberapi-0.6.1-aarch64-unknown-linux-gnu.tar.gz",
-        "macosIntel": "https://github.com/vicanso/cyberapi/releases/download/v0.6.1/cyberapi-0.6.1-x86_64-apple-darwin.dmg",
-        "windows": "https://github.com/vicanso/cyberapi/releases/download/v0.6.1/cyberapi-0.6.1-x86_64-pc-windows-msvc.zip"
+        "macosArm": "https://github.com/vicanso/cyberapi/releases/download/v0.6.2/cyberapi-0.6.2-aarch64-apple-darwin.dmg",
+        "linux": "https://github.com/vicanso/cyberapi/releases/download/v0.6.2/cyberapi-0.6.2-aarch64-unknown-linux-gnu.tar.gz",
+        "macosIntel": "https://github.com/vicanso/cyberapi/releases/download/v0.6.2/cyberapi-0.6.2-x86_64-apple-darwin.dmg",
+        "windows": "https://github.com/vicanso/cyberapi/releases/download/v0.6.2/cyberapi-0.6.2-x86_64-pc-windows-msvc.zip"
       }
     },
     "zniff": {
       "repo": "vicanso/zniff",
-      "stars": 0,
-      "latestTag": "v0.1.0",
+      "stars": 29,
+      "latestTag": "v0.2.1",
       "downloads": {
-        "macosArm": "https://github.com/vicanso/zniff/releases/download/v0.1.0/zniff-aarch64.dmg",
-        "linux": "https://github.com/vicanso/zniff/releases/download/v0.1.0/zniff-linux-x86_64.tar.gz",
-        "macosIntel": "https://github.com/vicanso/zniff/releases/download/v0.1.0/zniff-x86_64.dmg"
+        "macosArm": "https://github.com/vicanso/zniff/releases/download/v0.2.1/zniff-aarch64.dmg",
+        "linux": "https://github.com/vicanso/zniff/releases/download/v0.2.1/zniff-linux-aarch64.tar.gz",
+        "macosIntel": "https://github.com/vicanso/zniff/releases/download/v0.2.1/zniff-x86_64.dmg"
       }
     },
     "pingap": {
       "repo": "vicanso/pingap",
-      "stars": 1427,
+      "stars": 1431,
       "latestTag": "v0.16.2",
       "downloads": {
         "linux": "https://github.com/vicanso/pingap/releases/download/v0.16.2/pingap-linux-aarch64.deb"
@@ -43,16 +43,16 @@
     },
     "charts-rs": {
       "repo": "vicanso/charts-rs",
-      "stars": 449,
+      "stars": 454,
       "latestTag": "v2.3.0",
       "downloads": {}
     },
     "diving-rs": {
       "repo": "vicanso/diving-rs",
       "stars": 85,
-      "latestTag": "v0.12.0",
+      "latestTag": "v0.12.3",
       "downloads": {
-        "windows": "https://github.com/vicanso/diving-rs/releases/download/v0.12.0/diving-windows.exe"
+        "windows": "https://github.com/vicanso/diving-rs/releases/download/v0.12.3/diving-windows.exe"
       }
     },
     "httpstat": {
