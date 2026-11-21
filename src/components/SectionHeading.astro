@@ -1,0 +1,28 @@
+---
+interface Props {
+  index: string;
+  titleKey: string;
+  title: string;
+  subKey?: string;
+  sub?: string;
+  dot: string;
+}
+const { index, titleKey, title, subKey, sub, dot } = Astro.props;
+---
+
+<div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between" data-reveal>
+  <div class="flex items-center gap-3">
+    <span class="font-mono text-[12px] tabular-nums" style="color: var(--text-muted);">{index}</span>
+    <span class="h-px w-6" style={`background: ${dot};`}></span>
+    <h3 class="font-display text-[24px] font-semibold sm:text-[28px]" style="color: var(--text-primary);" data-i18n-key={titleKey}>
+      {title}
+    </h3>
+  </div>
+  {
+    sub && (
+      <p class="text-[14px]" style="color: var(--text-muted);" data-i18n-key={subKey}>
+        {sub}
+      </p>
+    )
+  }
+</div>

@@ -1,10 +1,55 @@
 ---
+interface Props {
+  cta?: boolean;
+}
+const { cta = false } = Astro.props;
 ---
 
-<footer class="mt-auto border-t py-8 transition-colors" style="border-color: var(--border-subtle);">
+{
+  cta && (
+    <section class="mx-auto mt-28 w-full max-w-[1120px] px-4 sm:mt-36 sm:px-6" data-reveal>
+      <div class="surface-card relative overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20" data-no-tilt>
+        <div
+          class="pointer-events-none absolute inset-0 -z-10 opacity-80"
+          style="background: radial-gradient(ellipse 60% 70% at 50% 0%, var(--aurora-1), transparent 70%), radial-gradient(ellipse 50% 60% at 90% 100%, var(--aurora-3), transparent 70%), radial-gradient(ellipse 40% 50% at 10% 100%, var(--aurora-2), transparent 70%);"
+          aria-hidden="true"
+        />
+        <h2 class="font-display text-[34px] font-bold leading-[1.08] sm:text-[52px]">
+          <span class="text-gradient-fade block" data-i18n-key="ctaTitle1">Like what you see?</span>
+          <span class="text-gradient-brand block pb-1" data-i18n-key="ctaTitle2">Star it on GitHub.</span>
+        </h2>
+        <p class="mx-auto mt-5 max-w-[520px] text-[16px] leading-relaxed" style="color: var(--text-secondary);" data-i18n-key="ctaSub">
+          Everything here is open source. Issues, ideas and pull requests are always welcome.
+        </p>
+        <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="https://github.com/vicanso"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-primary-tactile inline-flex items-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold text-white"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" /></svg>
+            <span data-i18n-key="ctaFollow">Follow @vicanso</span>
+          </a>
+          <a
+            href="#apps"
+            class="btn-secondary-tactile inline-flex items-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold"
+            style="color: var(--text-primary);"
+          >
+            <span data-i18n-key="heroCtaExplore">Explore the apps</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<footer class="mt-20 py-10">
+  <div class="glow-line mx-auto mb-10 max-w-[1120px]"></div>
   <div class="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-3 px-4 text-[13px] sm:flex-row sm:items-center sm:px-6" style="color: var(--text-muted);">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="font-medium text-neutral-400">© {new Date().getFullYear()} Vicanso</span>
+      <img src="/icons/avatar.png" alt="" width="20" height="20" class="h-5 w-5 rounded-full object-cover" />
+      <span class="font-medium" style="color: var(--text-secondary);">© {new Date().getFullYear()} Vicanso</span>
       <span>·</span>
       <span data-i18n-key="footerBuilt">Built with Astro · Hosted on Cloudflare Pages</span>
     </div>
@@ -12,7 +57,7 @@
       href="https://github.com/vicanso"
       target="_blank"
       rel="noopener noreferrer"
-      class="group inline-flex items-center gap-1.5 transition-colors hover:text-white"
+      class="group inline-flex items-center gap-1.5 transition-colors hover:text-[color:var(--accent)]"
       style="color: var(--text-secondary);"
     >
       <span>github.com/vicanso</span>

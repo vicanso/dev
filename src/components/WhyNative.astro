@@ -1,0 +1,112 @@
+---
+import { PROJECTS, TOTAL_STARS, formatStars } from '../data/projects';
+
+const metrics = [
+  {
+    value: TOTAL_STARS,
+    format: 'stars',
+    suffix: '+',
+    display: `${formatStars(TOTAL_STARS)}+`,
+    totalStars: true,
+    label: { en: 'GitHub stars', zh: 'GitHub Stars' },
+    hint: { en: 'across all projects', zh: '来自全部开源项目' },
+  },
+  {
+    value: PROJECTS.length,
+    display: String(PROJECTS.length),
+    label: { en: 'Flagship projects', zh: '精选作品' },
+    hint: { en: 'apps, infra & libraries', zh: '应用、基础设施与开源库' },
+  },
+  {
+    value: 3,
+    display: '3',
+    label: { en: 'Desktop platforms', zh: '桌面平台' },
+    hint: { en: 'macOS · Linux · Windows', zh: 'macOS · Linux · Windows' },
+  },
+  {
+    value: 0,
+    display: '0',
+    label: { en: 'Electron runtimes', zh: 'Electron 运行时' },
+    hint: { en: 'no bundled Chromium, ever', zh: '从不打包 Chromium' },
+  },
+];
+
+const rows = [
+  { en: 'No bundled browser runtime', zh: '无需打包浏览器运行时', native: 'yes', electron: 'no' },
+  { en: 'GPU-rendered native UI (GPUI / NSH)', zh: 'GPU 渲染的原生界面（GPUI / NSH）', native: 'yes', electron: 'partial' },
+  { en: 'Near-instant cold start', zh: '近乎瞬时的冷启动', native: 'yes', electron: 'no' },
+  { en: 'Small download, low idle memory', zh: '安装包小、空闲内存低', native: 'yes', electron: 'no' },
+  { en: 'Memory safety by default', zh: '默认内存安全', native: 'yes', electron: 'partial' },
+  { en: 'Keyboard-first, native feel', zh: '键盘优先、原生手感', native: 'yes', electron: 'partial' },
+];
+---
+
+<section class="relative my-24 sm:my-32" aria-labelledby="why-title">
+  <div class="mx-auto max-w-[720px] text-center" data-reveal>
+    <div class="eyebrow" data-i18n-key="whyEyebrow">Why native</div>
+    <h2 id="why-title" class="font-display mt-4 text-[34px] font-bold leading-[1.08] sm:text-[48px]">
+      <span class="text-gradient-fade" data-i18n-key="whyTitle1">Software that feels </span><span class="text-gradient-brand" data-i18n-key="whyTitle2">instant.</span>
+    </h2>
+    <p class="mt-4 text-[16px] leading-relaxed sm:text-[17px]" style="color: var(--text-secondary);" data-i18n-key="whySub">
+      Every tool here compiles to a single native binary. No web view pretending to be an app — just Rust, talking straight to your GPU and network stack.
+    </p>
+  </div>
+
+  <!-- Metrics -->
+  <div class="mt-12 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    {
+      metrics.map((m, i) => (
+        <div class="surface-card p-5 sm:p-6" data-reveal style={`--reveal-delay: ${i * 80}ms;`}>
+          <div
+            class="font-display text-[40px] font-bold leading-none tabular-nums sm:text-[52px] text-gradient-brand"
+            data-count={m.value}
+            data-count-format={m.format}
+            data-count-suffix={m.suffix}
+            data-count-total-stars={m.totalStars ? '' : undefined}
+          >
+            {m.display}
+          </div>
+          <div class="mt-3 text-[14.5px] font-semibold" style="color: var(--text-primary);" data-en={m.label.en} data-zh={m.label.zh}>
+            {m.label.en}
+          </div>
+          <div class="mt-1 text-[12.5px]" style="color: var(--text-muted);" data-en={m.hint.en} data-zh={m.hint.zh}>
+            {m.hint.en}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Native vs Electron -->
+  <div class="surface-card mt-4 overflow-hidden p-0" data-reveal data-no-tilt style="--reveal-delay: 120ms;">
+    <div class="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b px-5 py-4 sm:gap-x-10 sm:px-7" style="border-color: var(--border-subtle);">
+      <span class="text-[13px] font-medium" style="color: var(--text-muted);" data-i18n-key="whyCompareHead">What you get</span>
+      <span class="w-20 text-center sm:w-36">
+        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold text-white" style="background: var(--grad-brand);">
+          <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Rust</span>
+        </span>
+      </span>
+      <span class="w-20 text-center text-[12.5px] font-medium sm:w-36" style="color: var(--text-muted);">Electron</span>
+    </div>
+    {
+      rows.map((r) => (
+        <div class="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b px-5 py-3.5 last:border-b-0 sm:gap-x-10 sm:px-7" style="border-color: var(--border-subtle);">
+          <span class="text-[14px] sm:text-[15px]" style="color: var(--text-primary);" data-en={r.en} data-zh={r.zh}>{r.en}</span>
+          <span class="flex w-20 justify-center sm:w-36">
+            <span class="flex h-6 w-6 items-center justify-center rounded-full" style="background: var(--accent-soft); color: var(--accent);">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-label="Yes"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+          </span>
+          <span class="flex w-20 justify-center sm:w-36" style="color: var(--text-muted);">
+            {r.electron === 'no' ? (
+              <svg class="h-4 w-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-label="No"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            ) : (
+              <svg class="h-4 w-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-label="Partial"><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+            )}
+          </span>
+        </div>
+      ))
+    }
+  </div>
+</section>

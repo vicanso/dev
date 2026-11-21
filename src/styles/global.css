@@ -23,9 +23,27 @@
   --glow-color-1: rgba(249, 115, 22, 0.14);
   --glow-color-2: rgba(56, 189, 248, 0.07);
   --tech-mesh-color: rgba(255, 255, 255, 0.05);
+  --accent-2: #f43f5e;
+  --accent-3: #a855f7;
+  --grad-brand: linear-gradient(110deg, #fb923c 0%, #f43f5e 45%, #a855f7 100%);
+  --aurora-1: rgba(249, 115, 22, 0.32);
+  --aurora-2: rgba(244, 63, 94, 0.22);
+  --aurora-3: rgba(168, 85, 247, 0.2);
+  --spotlight: rgba(251, 146, 60, 0.1);
+  --spotlight-border: rgba(251, 146, 60, 0.45);
+  --grain-opacity: 0.06;
 }
 
 html.light {
+  --accent-2: #e11d48;
+  --accent-3: #9333ea;
+  --grad-brand: linear-gradient(110deg, #ea580c 0%, #e11d48 50%, #9333ea 100%);
+  --aurora-1: rgba(251, 146, 60, 0.28);
+  --aurora-2: rgba(251, 113, 133, 0.2);
+  --aurora-3: rgba(192, 132, 252, 0.18);
+  --spotlight: rgba(234, 88, 12, 0.06);
+  --spotlight-border: rgba(234, 88, 12, 0.35);
+  --grain-opacity: 0.035;
   color-scheme: light;
   --bg-canvas: #fafafa;
   --bg-surface: #ffffff;
@@ -163,6 +181,220 @@ html.light .surface-card {
   transform: scale(0.98);
 }
 
+/* ───────────────── Display typography ───────────────── */
+.font-display {
+  font-family: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  letter-spacing: -0.035em;
+  font-feature-settings: "ss01", "cv11";
+}
+
+.text-gradient-brand {
+  background: var(--grad-brand);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 8s ease-in-out infinite alternate;
+}
+
+.text-gradient-fade {
+  background: linear-gradient(180deg, var(--text-primary) 30%, color-mix(in srgb, var(--text-primary) 55%, transparent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes gradient-pan {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+/* ───────────────── Aurora background ───────────────── */
+.aurora {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 900px;
+  filter: blur(90px) saturate(140%);
+  opacity: 0.9;
+}
+.aurora > span {
+  position: absolute;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+html.light .aurora > span { mix-blend-mode: multiply; }
+.aurora > span:nth-child(1) {
+  width: 52vw; height: 52vw; max-width: 720px; max-height: 720px;
+  left: 12%; top: -8%;
+  background: radial-gradient(circle, var(--aurora-1), transparent 65%);
+  animation: aurora-a 22s ease-in-out infinite alternate;
+}
+.aurora > span:nth-child(2) {
+  width: 44vw; height: 44vw; max-width: 620px; max-height: 620px;
+  right: 6%; top: 4%;
+  background: radial-gradient(circle, var(--aurora-2), transparent 65%);
+  animation: aurora-b 26s ease-in-out infinite alternate;
+}
+.aurora > span:nth-child(3) {
+  width: 40vw; height: 40vw; max-width: 560px; max-height: 560px;
+  left: 38%; top: 22%;
+  background: radial-gradient(circle, var(--aurora-3), transparent 65%);
+  animation: aurora-c 30s ease-in-out infinite alternate;
+}
+@keyframes aurora-a { to { transform: translate3d(14%, 10%, 0) scale(1.15); } }
+@keyframes aurora-b { to { transform: translate3d(-18%, 16%, 0) scale(0.9); } }
+@keyframes aurora-c { to { transform: translate3d(10%, -14%, 0) scale(1.2); } }
+
+.grain {
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ───────────────── Card spotlight + tilt ───────────────── */
+.surface-card {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
+  --lift: 0px;
+  transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift));
+  isolation: isolate;
+}
+.surface-card:hover {
+  --lift: -3px;
+  transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift));
+}
+.surface-card::before,
+.surface-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.surface-card::before {
+  z-index: -1;
+  background: radial-gradient(520px circle at var(--mx) var(--my), var(--spotlight), transparent 45%);
+}
+.surface-card::after {
+  padding: 1px;
+  background: radial-gradient(360px circle at var(--mx) var(--my), var(--spotlight-border), transparent 45%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.surface-card:hover::before,
+.surface-card:hover::after { opacity: 1; }
+
+/* ───────────────── Scroll reveal ───────────────── */
+html.js [data-reveal] {
+  opacity: 0;
+  translate: 0 28px;
+  filter: blur(6px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+              translate 900ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.js [data-reveal].is-visible {
+  opacity: 1;
+  translate: 0 0;
+  filter: blur(0);
+}
+
+/* Hero entrance (runs once on load) */
+.hero-in {
+  animation: hero-in 1000ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(24px); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ───────────────── Hero product collage ───────────────── */
+.collage {
+  --px: 0;
+  --py: 0;
+  perspective: 1800px;
+}
+.collage-stage {
+  transform-style: preserve-3d;
+  transform: rotateX(calc(14deg + var(--py) * -4deg)) rotateY(calc(var(--px) * 6deg));
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.collage-window {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d1017;
+  box-shadow: 0 40px 80px -24px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 400ms ease;
+}
+html.light .collage-window {
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 40px 80px -28px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+.collage-window:hover { box-shadow: 0 50px 100px -24px rgba(0, 0, 0, 0.8), 0 0 40px -8px var(--accent-glow); }
+.float-a { animation: float 7s ease-in-out infinite; }
+.float-b { animation: float 8.5s ease-in-out -2s infinite; }
+.float-c { animation: float 9s ease-in-out -4s infinite; }
+@keyframes float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+
+/* Glow divider */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-2) 60%, transparent);
+  opacity: 0.5;
+}
+
+/* Gradient-border pill */
+.pill-gradient {
+  position: relative;
+  background: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+  border-radius: 9999px;
+}
+.pill-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--grad-brand);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* CJK headlines read larger than Latin at the same size */
+.hero-title { font-size: 40px; line-height: 1.04; }
+html[data-lang="zh"] .hero-title { font-size: 34px; line-height: 1.2; letter-spacing: -0.01em; }
+@media (min-width: 640px) {
+  .hero-title { font-size: 56px; }
+  html[data-lang="zh"] .hero-title { font-size: 46px; }
+}
+@media (min-width: 1024px) {
+  .hero-title { font-size: 68px; }
+  html[data-lang="zh"] .hero-title { font-size: 56px; }
+}
+
+/* Section eyebrow */
+.eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 /* Accessibility & reduced motion */
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -175,5 +407,15 @@ html.light .surface-card {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  html.js [data-reveal] {
+    opacity: 1;
+    translate: none;
+    filter: none;
+  }
+  .surface-card,
+  .surface-card:hover,
+  .collage-stage {
+    transform: none !important;
   }
 }
